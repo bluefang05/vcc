@@ -19,10 +19,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $db_pass = $_POST['db_pass'] ?? '';
     $site_title = trim($_POST['site_title'] ?? 'Virtual Communication Connection');
     $site_url = trim($_POST['site_url'] ?? '');
+    $admin_username = trim($_POST['admin_username'] ?? 'admin');
+    $admin_password = $_POST['admin_password'] ?? '';
+    $admin_email = trim($_POST['admin_email'] ?? '');
     
     // Validate required fields
     if (empty($db_name) || empty($db_user)) {
         $error = 'Database name and username are required.';
+    } elseif (empty($admin_username) || empty($admin_password)) {
+        $error = 'Admin username and password are required.';
     } else {
         // Test database connection
         try {
@@ -31,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             
             // Create tables if needed
-            createTables($pdo);
+            createTables($pdo, $admin_username, $admin_password, $admin_email);
             
             // Generate config file
             $configContent = generateConfig($db_host, $db_name, $db_user, $db_pass, $site_title, $site_url);
@@ -47,7 +52,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-function createTables($pdo) {
+function createTables($pdo, $admin_username, $admin_password, $admin_email) {
+    // Create admin users table with roles
+    $sql = "CREATE TABLE IF NOT EXISTS admin_users (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        username VARCHAR(50) UNIQUE NOT NULL,
+        password_hash VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL,
+        role ENUM('super_admin', 'admin', 'editor', 'author') DEFAULT 'admin',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        last_login TIMESTAMP NULL,
+        is_active TINYINT(1) DEFAULT 1
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+    
+    $pdo->exec($sql);
+    
     // Create contact messages table
     $sql = "CREATE TABLE IF NOT EXISTS contact_messages (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -55,7 +74,73 @@ function createTables($pdo) {
         email VARCHAR(255) NOT NULL,
         subject VARCHAR(255),
         message TEXT NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        status ENUM('new', 'read', 'replied', 'archived') DEFAULT 'new',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+    
+    $pdo->exec($sql);
+    
+    // Create blog posts table
+    $sql = "CREATE TABLE IF NOT EXISTS blog_posts (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        slug VARCHAR(255) UNIQUE NOT NULL,
+        excerpt TEXT,
+        content LONGTEXT NOT NULL,
+        featured_image VARCHAR(255),
+        author_id INT,
+        status ENUM('draft', 'published', 'scheduled') DEFAULT 'draft',
+        published_at TIMESTAMP NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        meta_title VARCHAR(255),
+        meta_description TEXT,
+        meta_keywords VARCHAR(500),
+        views INT DEFAULT 0,
+        FOREIGN KEY (author_id) REFERENCES admin_users(id) ON DELETE SET NULL
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+    
+    $pdo->exec($sql);
+    
+    // Create categories table
+    $sql = "CREATE TABLE IF NOT EXISTS categories (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(100) NOT NULL,
+        slug VARCHAR(100) UNIQUE NOT NULL,
+        description TEXT,
+        parent_id INT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (parent_id) REFERENCES categories(id) ON DELETE SET NULL
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+    
+    $pdo->exec($sql);
+    
+    // Create post_categories junction table
+    $sql = "CREATE TABLE IF NOT EXISTS post_categories (
+        post_id INT NOT NULL,
+        category_id INT NOT NULL,
+        PRIMARY KEY (post_id, category_id),
+        FOREIGN KEY (post_id) REFERENCES blog_posts(id) ON DELETE CASCADE,
+        FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+    
+    $pdo->exec($sql);
+    
+    // Create media library table
+    $sql = "CREATE TABLE IF NOT EXISTS media_library (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        filename VARCHAR(255) NOT NULL,
+        original_name VARCHAR(255) NOT NULL,
+        file_path VARCHAR(500) NOT NULL,
+        file_type VARCHAR(50) NOT NULL,
+        file_size INT NOT NULL,
+        mime_type VARCHAR(100),
+        uploaded_by INT,
+        uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        alt_text VARCHAR(255),
+        caption TEXT,
+        FOREIGN KEY (uploaded_by) REFERENCES admin_users(id) ON DELETE SET NULL
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
     
     $pdo->exec($sql);
@@ -65,16 +150,64 @@ function createTables($pdo) {
         id INT AUTO_INCREMENT PRIMARY KEY,
         setting_key VARCHAR(100) UNIQUE NOT NULL,
         setting_value TEXT,
+        setting_type VARCHAR(20) DEFAULT 'text',
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
     
     $pdo->exec($sql);
     
+    // Create activity log table
+    $sql = "CREATE TABLE IF NOT EXISTS activity_log (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT,
+        action VARCHAR(100) NOT NULL,
+        description TEXT,
+        ip_address VARCHAR(45),
+        user_agent VARCHAR(255),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES admin_users(id) ON DELETE SET NULL
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+    
+    $pdo->exec($sql);
+    
+    // Insert default admin user
+    $password_hash = password_hash($admin_password, PASSWORD_DEFAULT);
+    $stmt = $pdo->prepare("INSERT INTO admin_users (username, password_hash, email, role) VALUES (?, ?, ?, 'super_admin')");
+    $stmt->execute([$admin_username, $password_hash, $admin_email ?: 'admin@vcc.com']);
+    
     // Insert default settings
-    $stmt = $pdo->prepare("INSERT IGNORE INTO settings (setting_key, setting_value) VALUES (?, ?)");
-    $stmt->execute(['site_title', 'Virtual Communication Connection']);
-    $stmt->execute(['contact_email', 'info@vcc.com']);
-    $stmt->execute(['whatsapp_number', '+18095866653']);
+    $stmt = $pdo->prepare("INSERT IGNORE INTO settings (setting_key, setting_value, setting_type) VALUES (?, ?, ?)");
+    $settings = [
+        ['site_title', 'Virtual Communication Connection', 'text'],
+        ['contact_email', 'info@vcc.com', 'email'],
+        ['whatsapp_number', '+18095866653', 'text'],
+        ['phone', '+1 809-586-6653', 'text'],
+        ['address', 'Margaria mears 18, Puerto Plata, Dominican Republic 57000', 'text'],
+        ['hero_title', 'Connecting You to the World', 'text'],
+        ['hero_subtitle', 'Professional communication solutions for modern businesses', 'text'],
+        ['about_content', 'VCC is dedicated to providing top-tier communication services...', 'textarea'],
+        ['facebook_url', '', 'url'],
+        ['instagram_url', '', 'url'],
+        ['twitter_url', '', 'url'],
+        ['linkedin_url', '', 'url'],
+    ];
+    
+    foreach ($settings as $setting) {
+        $stmt->execute($setting);
+    }
+    
+    // Insert default categories
+    $stmt = $pdo->prepare("INSERT IGNORE INTO categories (name, slug, description) VALUES (?, ?, ?)");
+    $categories = [
+        ['Company News', 'company-news', 'Latest updates from VCC'],
+        ['Technology', 'technology', 'Tech trends and innovations'],
+        ['Communication Tips', 'communication-tips', 'Tips for better communication'],
+        ['Industry Insights', 'industry-insights', 'Analysis and insights'],
+    ];
+    
+    foreach ($categories as $category) {
+        $stmt->execute($category);
+    }
 }
 
 function generateConfig($db_host, $db_name, $db_user, $db_pass, $site_title, $site_url) {
@@ -99,6 +232,15 @@ define('DB_PASS', '$db_pass_escaped');
 define('SITE_TITLE', '$site_title_escaped');
 define('SITE_URL', '$site_url');
 
+// Upload Directory
+define('UPLOAD_DIR', __DIR__ . '/uploads/');
+define('UPLOAD_URL', SITE_URL . '/uploads/');
+
+// Security Keys (Change these for production!)
+define('AUTH_KEY', '" . bin2hex(random_bytes(32)) . "');
+define('SECURE_AUTH_KEY', '" . bin2hex(random_bytes(32)) . "');
+define('LOGGED_IN_KEY', '" . bin2hex(random_bytes(32)) . "');
+
 // Database Connection
 function getDBConnection() {
     try {
@@ -111,6 +253,51 @@ function getDBConnection() {
     }
 }
 
+// Helper function to get setting
+function getSetting(\$key, \$default = '') {
+    static \$settings = null;
+    if (\$settings === null) {
+        \$pdo = getDBConnection();
+        \$stmt = \$pdo->query(\"SELECT setting_key, setting_value FROM settings\");
+        \$settings = \$stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+    }
+    return \$settings[\$key] ?? \$default;
+}
+
+// Check if user is logged in
+function isLoggedIn() {
+    return isset(\$_SESSION['admin_id']) && isset(\$_SESSION['admin_role']);
+}
+
+// Check user role
+function hasRole(\$requiredRoles) {
+    if (!isLoggedIn()) return false;
+    if (is_string(\$requiredRoles)) \$requiredRoles = [\$requiredRoles];
+    return in_array(\$_SESSION['admin_role'], \$requiredRoles);
+}
+
+// Redirect to login if not authenticated
+function requireLogin() {
+    if (!isLoggedIn()) {
+        header('Location: admin/login.php');
+        exit;
+    }
+}
+
+// Log activity
+function logActivity(\$action, \$description = '') {
+    if (!isLoggedIn()) return;
+    \$pdo = getDBConnection();
+    \$stmt = \$pdo->prepare(\"INSERT INTO activity_log (user_id, action, description, ip_address, user_agent) VALUES (?, ?, ?, ?, ?)\");
+    \$stmt->execute([
+        \$_SESSION['admin_id'],
+        \$action,
+        \$description,
+        \$_SERVER['REMOTE_ADDR'] ?? '',
+        \$_SERVER['HTTP_USER_AGENT'] ?? ''
+    ]);
+}
+
 // Security: Prevent direct access to config
 if (!defined('VCC_INSTALLED')) {
     define('VCC_INSTALLED', true);
@@ -118,9 +305,9 @@ if (!defined('VCC_INSTALLED')) {
 ";
 }
 
-// If installation successful, redirect to site
+// If installation successful, redirect to admin login
 if ($success) {
-    header('Location: index.php');
+    header('Location: admin/login.php?installed=1');
     exit;
 }
 ?>
@@ -151,7 +338,7 @@ if ($success) {
             background: white;
             border-radius: 15px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 600px;
+            max-width: 650px;
             width: 100%;
             overflow: hidden;
         }
@@ -175,10 +362,12 @@ if ($success) {
         
         .installer-body {
             padding: 40px;
+            max-height: 70vh;
+            overflow-y: auto;
         }
         
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
         
         .form-group label {
@@ -188,7 +377,9 @@ if ($success) {
             color: #0a2540;
         }
         
-        .form-group input {
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
             width: 100%;
             padding: 12px 15px;
             border: 2px solid #e0e0e0;
@@ -197,7 +388,9 @@ if ($success) {
             transition: border-color 0.3s;
         }
         
-        .form-group input:focus {
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
             outline: none;
             border-color: #00d4d4;
         }
@@ -209,12 +402,21 @@ if ($success) {
             font-size: 0.85rem;
         }
         
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
         .section-title {
             color: #00d4d4;
             font-size: 1.3rem;
-            margin: 30px 0 20px;
+            margin: 25px 0 15px;
             padding-bottom: 10px;
             border-bottom: 2px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
         .btn-install {
@@ -228,6 +430,7 @@ if ($success) {
             cursor: pointer;
             width: 100%;
             transition: transform 0.3s, box-shadow 0.3s;
+            margin-top: 20px;
         }
         
         .btn-install:hover {
@@ -264,6 +467,30 @@ if ($success) {
             font-weight: bold;
             font-size: 1.5rem;
         }
+        
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 0 10px;
+        }
+        
+        .step {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            background: #f5f5f5;
+            margin: 0 5px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #666;
+        }
+        
+        .step.active {
+            background: #00d4d4;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -273,13 +500,19 @@ if ($success) {
                 <div class="logo-placeholder">VCC</div>
             </div>
             <h1>Welcome to VCC</h1>
-            <p>Website Installation Wizard</p>
+            <p>CMS Installation Wizard</p>
         </div>
         
         <div class="installer-body">
             <?php if ($error): ?>
                 <div class="alert alert-error"><?php echo htmlspecialchars($error); ?></div>
             <?php endif; ?>
+            
+            <div class="step-indicator">
+                <div class="step active">1. Site Info</div>
+                <div class="step active">2. Database</div>
+                <div class="step active">3. Admin Account</div>
+            </div>
             
             <form method="POST" action="">
                 <div class="section-title">🌐 Site Information</div>
@@ -298,31 +531,57 @@ if ($success) {
                 
                 <div class="section-title">💾 Database Configuration</div>
                 
-                <div class="form-group">
-                    <label for="db_host">Database Host</label>
-                    <input type="text" id="db_host" name="db_host" value="localhost" required>
-                    <small>Usually "localhost"</small>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="db_host">Database Host</label>
+                        <input type="text" id="db_host" name="db_host" value="localhost" required>
+                        <small>Usually "localhost"</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="db_name">Database Name</label>
+                        <input type="text" id="db_name" name="db_name" required>
+                        <small>The name of your database</small>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="db_user">Database Username</label>
+                        <input type="text" id="db_user" name="db_user" required>
+                        <small>Your MySQL username</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="db_pass">Database Password</label>
+                        <input type="password" id="db_pass" name="db_pass">
+                        <small>Your MySQL password</small>
+                    </div>
+                </div>
+                
+                <div class="section-title">👤 Admin Account</div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="admin_username">Admin Username</label>
+                        <input type="text" id="admin_username" name="admin_username" value="admin" required>
+                        <small>Your login username</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="admin_email">Admin Email</label>
+                        <input type="email" id="admin_email" name="admin_email" placeholder="admin@vcc.com">
+                        <small>Your email address</small>
+                    </div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="db_name">Database Name</label>
-                    <input type="text" id="db_name" name="db_name" required>
-                    <small>The name of your database</small>
+                    <label for="admin_password">Admin Password</label>
+                    <input type="password" id="admin_password" name="admin_password" required minlength="6">
+                    <small>Choose a strong password (min 6 characters)</small>
                 </div>
                 
-                <div class="form-group">
-                    <label for="db_user">Database Username</label>
-                    <input type="text" id="db_user" name="db_user" required>
-                    <small>Your MySQL username</small>
-                </div>
-                
-                <div class="form-group">
-                    <label for="db_pass">Database Password</label>
-                    <input type="password" id="db_pass" name="db_pass">
-                    <small>Your MySQL password</small>
-                </div>
-                
-                <button type="submit" class="btn-install">Install VCC Website</button>
+                <button type="submit" class="btn-install">🚀 Install VCC CMS</button>
             </form>
         </div>
     </div>
