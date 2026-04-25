@@ -1,28 +1,60 @@
-```
-# Compiled and build artifacts
-*.pyc
-__pycache__/
+# Examples
+#   .gitignore for a PHP web project
 
 # Dependencies
-node_modules/
 vendor/
-composer.lock
 
-# Logs and temp files
+# Build artifacts
+dist/
+build/
+*.phar
+
+# Logs
 *.log
-*.tmp
-*.swp
+logs/
+var/log/
 
-# Environment
+# Environment specific
 .env
 .env.local
-*.env.*
+.env.*
 
-# Editors
+# IDE and editor files
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
 
 # OS generated files
 .DS_Store
 Thumbs.db
-```
+
+# Cache directories
+.cache/
+tmp/
+temp/
+
+# Compiled PHP (if using OPcache or similar)
+*.opcache
+
+# Session files
+*.sess
+
+# Backup files
+*~
+*.bak
+*.backup
+
+# Composer cache (if not in vendor/)
+composer.phar
+composer.lock
+
+# Testing
+.phpunit.result.cache
+.phpunit.xml
+coverage/
+.php_cs.cache
+
+# Legacy admin directory that was removed
+vcc-website/admin/

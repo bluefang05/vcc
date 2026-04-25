@@ -12,7 +12,7 @@ if (file_exists('config.php')) {
 $error = '';
 $success = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['install_now'])) {
     $db_host = trim($_POST['db_host'] ?? 'localhost');
     $db_name = trim($_POST['db_name'] ?? '');
     $db_user = trim($_POST['db_user'] ?? '');
@@ -279,7 +279,7 @@ function hasRole(\$requiredRoles) {
 // Redirect to login if not authenticated
 function requireLogin() {
     if (!isLoggedIn()) {
-        header('Location: admin/login.php');
+        header('Location: vcc-portal/login.php');
         exit;
     }
 }
@@ -307,7 +307,7 @@ if (!defined('VCC_INSTALLED')) {
 
 // If installation successful, redirect to admin login
 if ($success) {
-    header('Location: admin/login.php?installed=1');
+    header('Location: vcc-portal/login.php?installed=1');
     exit;
 }
 ?>
@@ -581,7 +581,7 @@ if ($success) {
                     <small>Choose a strong password (min 6 characters)</small>
                 </div>
                 
-                <button type="submit" class="btn-install">🚀 Install VCC CMS</button>
+                <button type="submit" name="install_now" class="btn-install">🚀 Install VCC CMS</button>
             </form>
         </div>
     </div>
