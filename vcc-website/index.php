@@ -109,36 +109,40 @@ function getSiteSetting($key, $default = '') {
         <div class="container">
             <h2 class="section-title">Our Services</h2>
             <p class="section-subtitle">Complete communication solutions for your business</p>
+            <div class="services-intro">
+                <p>We provide comprehensive front office and back office support process management through various contact channels including phone, in-person, and virtual interactions. Our services support the entire customer relationship cycle in both outsourcing and insourcing modalities.</p>
+                <p><strong>Our bilingual team speaks 4 languages:</strong> English, French, Creole, and Spanish.</p>
+            </div>
             <div class="services-grid">
                 <div class="service-card">
                     <div class="service-icon">📞</div>
                     <h3>Customer Service</h3>
-                    <p>Professional management of inquiries, complaints, and general support to keep your customers satisfied.</p>
+                    <p>Professional management of inquiries, complaints, and general support to keep your customers satisfied. Our bilingual agents ensure clear communication in English, French, Creole, and Spanish.</p>
                 </div>
                 <div class="service-card">
                     <div class="service-icon">🔧</div>
                     <h3>Technical Support</h3>
-                    <p>Specialized technical assistance to resolve issues and ensure operational continuity.</p>
+                    <p>Specialized technical assistance including backend and/or frontend programming support to resolve issues and ensure operational continuity.</p>
                 </div>
                 <div class="service-card">
                     <div class="service-icon">💼</div>
-                    <h3>Sales & Telemarketing</h3>
-                    <p>Proactive telephone sales strategies to expand your customer base and revenue.</p>
+                    <h3>Sales & Account Management</h3>
+                    <p>Proactive telephone sales strategies, account management, and market research to expand your customer base and revenue.</p>
                 </div>
                 <div class="service-card">
                     <div class="service-icon">💬</div>
-                    <h3>WhatsApp & Social Media Management</h3>
-                    <p>Professional administration of your most important digital channels.</p>
+                    <h3>Communication Channels</h3>
+                    <p>Professional administration of phone, chat, WhatsApp, email, and social media channels with multilingual support.</p>
                 </div>
                 <div class="service-card">
                     <div class="service-icon">📊</div>
-                    <h3>Customer Follow-up</h3>
-                    <p>Strategic follow-up to retain customers and maximize business opportunities.</p>
+                    <h3>Business Process Support</h3>
+                    <p>Document administration, translations, interpretation services, customer follow-up, delivery, and installation services as required.</p>
                 </div>
                 <div class="service-card">
                     <div class="service-icon">🌙</div>
                     <h3>24/7 Call Center</h3>
-                    <p>Continuous coverage without interruptions, because your business never sleeps.</p>
+                    <p>Continuous coverage without interruptions, because your business never sleeps. Available in all 4 supported languages.</p>
                 </div>
             </div>
         </div>
