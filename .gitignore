@@ -1,1 +1,43 @@
-Nothing should be ignored in this case, as the changes only include PHP source files (.php) which are legitimate project files and not build artifacts, dependencies, or temporary files.
+```
+# Web server
+.htaccess
+
+# Uploads directory
+vcc-website/uploads/
+
+# Compiled and build artifacts
+*.pyc
+__pycache__/
+*.o
+*.obj
+dist/
+build/
+
+# Dependencies
+.venv/
+venv/
+node_modules/
+
+# Logs and temp files
+*.log
+*.tmp
+*.swp
+
+# Environment
+.env
+.env.local
+.env.*
+
+# Editors
+.vscode/
+.idea/
+
+# Coverage
+coverage/
+htmlcov/
+.coverage
+
+# OS
+.DS_Store
+Thumbs.db
+```
