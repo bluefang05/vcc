@@ -4,8 +4,15 @@
  * A WordPress-like installation script for the VCC informative site
  */
 
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+// Get the directory where this script is located
+$baseDir = __DIR__;
+
 // Prevent direct access if already installed
-if (file_exists('config.php')) {
+if (file_exists($baseDir . '/config.php')) {
     die('The site is already installed. Delete config.php to reinstall.');
 }
 
@@ -41,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['install_now'])) {
             // Generate config file
             $configContent = generateConfig($db_host, $db_name, $db_user, $db_pass, $site_title, $site_url);
             
-            if (file_put_contents('config.php', $configContent)) {
+            if (file_put_contents($baseDir . '/config.php', $configContent)) {
                 $success = true;
             } else {
                 $error = 'Could not write config.php. Please check file permissions.';
