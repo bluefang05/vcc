@@ -12,13 +12,30 @@ if (!file_exists('config.php')) {
 
 require_once 'config.php';
 define('VCC_INSTALLED', true);
+
+// Fetch settings from database for dynamic content
+$siteSettings = [];
+try {
+    $pdo = getDBConnection();
+    $stmt = $pdo->query("SELECT setting_key, setting_value FROM settings");
+    $siteSettings = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+} catch (Exception $e) {
+    // Use defaults if settings not available
+}
+
+// Helper to get setting with fallback
+function getSiteSetting($key, $default = '') {
+    global $siteSettings;
+    return $siteSettings[$key] ?? $default;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo defined('SITE_TITLE') ? SITE_TITLE : 'VCC - Virtual Communication Connection'; ?> | Virtual Call Center & Outsourcing</title>
+    <title><?php echo htmlspecialchars(getSiteSetting('site_title', SITE_TITLE)); ?> | Virtual Call Center & Outsourcing</title>
+    <meta name="description" content="<?php echo htmlspecialchars(getSiteSetting('meta_description', 'Professional virtual call center and communications outsourcing in the Dominican Republic.')); ?>">
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -36,7 +53,7 @@ define('VCC_INSTALLED', true);
                 <li><a href="#values">Values</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
-            <a href="https://wa.me/18095866653" class="btn-primary nav-cta">WhatsApp</a>
+            <a href="<?php echo htmlspecialchars(getSiteSetting('whatsapp_number', 'https://wa.me/18095866653')); ?>" class="btn-primary nav-cta">WhatsApp</a>
         </nav>
     </header>
 
@@ -44,12 +61,12 @@ define('VCC_INSTALLED', true);
     <section id="home" class="hero">
         <div class="hero-overlay"></div>
         <div class="container hero-content">
-            <h1 class="hero-title">Virtual Communication Connection</h1>
-            <p class="hero-subtitle">Virtual Call Center & Communications Outsourcing</p>
-            <p class="hero-description">We connect companies with their clients intelligently, humanly, and efficiently</p>
+            <h1 class="hero-title"><?php echo htmlspecialchars(getSiteSetting('hero_title', 'Virtual Communication Connection')); ?></h1>
+            <p class="hero-subtitle"><?php echo htmlspecialchars(getSiteSetting('hero_subtitle', 'Virtual Call Center & Communications Outsourcing')); ?></p>
+            <p class="hero-description"><?php echo htmlspecialchars(getSiteSetting('hero_description', 'We connect companies with their clients intelligently, humanly, and efficiently')); ?></p>
             <div class="hero-buttons">
                 <a href="#services" class="btn-primary">Our Services</a>
-                <a href="https://wa.me/18095866653" class="btn-secondary">Contact Us</a>
+                <a href="<?php echo htmlspecialchars(getSiteSetting('contact_whatsapp', 'https://wa.me/18095866653')); ?>" class="btn-secondary">Contact Us</a>
             </div>
         </div>
     </section>
@@ -57,30 +74,30 @@ define('VCC_INSTALLED', true);
     <!-- About Section -->
     <section id="about" class="about section">
         <div class="container">
-            <h2 class="section-title">About Us</h2>
+            <h2 class="section-title"><?php echo htmlspecialchars(getSiteSetting('about_title', 'About Us')); ?></h2>
             <div class="about-content">
                 <div class="about-text">
                     <p class="about-intro">
-                        <strong>Virtual Communication Connection (VCC)</strong> is a next-generation virtual call center in the Dominican Republic.
+                        <?php echo getSiteSetting('about_intro', '<strong>Virtual Communication Connection (VCC)</strong> is a next-generation virtual call center in the Dominican Republic.'); ?>
                     </p>
                     <p>
-                        We enable companies to delegate all their communications <strong>(calls, chats, WhatsApp, emails)</strong> professionally, scalably, and at lower cost.
+                        <?php echo getSiteSetting('about_description_1', 'We enable companies to delegate all their communications <strong>(calls, chats, WhatsApp, emails)</strong> professionally, scalably, and at lower cost.'); ?>
                     </p>
                     <p>
-                        We have native operators in <strong>Spanish, English, and Creole</strong>, <strong>VoIP</strong> technology, <strong>integrated CRM</strong>, and real-time reporting.
+                        <?php echo getSiteSetting('about_description_2', 'We have native operators in <strong>Spanish, English, and Creole</strong>, <strong>VoIP</strong> technology, <strong>integrated CRM</strong>, and real-time reporting.'); ?>
                     </p>
-                    <p class="about-tagline"><em>More than a call center, we are your remote extension.</em></p>
+                    <p class="about-tagline"><em><?php echo htmlspecialchars(getSiteSetting('about_tagline', 'More than a call center, we are your remote extension.')); ?></em></p>
                 </div>
                 <div class="about-cards">
                     <div class="info-card">
                         <div class="card-icon">🎯</div>
-                        <h3>Mission</h3>
-                        <p>We connect companies with their clients intelligently, humanly, and efficiently. We manage customer service, sales, support, and follow-up so you can focus on growing your business.</p>
+                        <h3><?php echo htmlspecialchars(getSiteSetting('mission_title', 'Mission')); ?></h3>
+                        <p><?php echo htmlspecialchars(getSiteSetting('mission_content', 'We connect companies with their clients intelligently, humanly, and efficiently. We manage customer service, sales, support, and follow-up so you can focus on growing your business.')); ?></p>
                     </div>
                     <div class="info-card">
                         <div class="card-icon">🚀</div>
-                        <h3>Vision</h3>
-                        <p>To be the leading virtual communications outsourcing company in the Dominican Republic and the Caribbean by 2030, combining the best technology with a human touch.</p>
+                        <h3><?php echo htmlspecialchars(getSiteSetting('vision_title', 'Vision')); ?></h3>
+                        <p><?php echo htmlspecialchars(getSiteSetting('vision_content', 'To be the leading virtual communications outsourcing company in the Dominican Republic and the Caribbean by 2030, combining the best technology with a human touch.')); ?></p>
                     </div>
                 </div>
             </div>
@@ -164,49 +181,49 @@ define('VCC_INSTALLED', true);
     <!-- CTA Section -->
     <section class="cta section">
         <div class="container cta-content">
-            <h2>"Your professional connection, without limits"</h2>
-            <p>Take your customer service to the next level with VCC</p>
-            <a href="https://wa.me/18095866653" class="btn-primary btn-large">Write Now 🚀</a>
+            <h2><?php echo htmlspecialchars(getSiteSetting('cta_headline', '"Your professional connection, without limits"')); ?></h2>
+            <p><?php echo htmlspecialchars(getSiteSetting('cta_subheadline', 'Take your customer service to the next level with VCC')); ?></p>
+            <a href="<?php echo htmlspecialchars(getSiteSetting('contact_whatsapp', 'https://wa.me/18095866653')); ?>" class="btn-primary btn-large"><?php echo htmlspecialchars(getSiteSetting('cta_button_text', 'Write Now 🚀')); ?></a>
         </div>
     </section>
 
     <!-- Contact Section -->
     <section id="contact" class="contact section">
         <div class="container">
-            <h2 class="section-title">Contact</h2>
+            <h2 class="section-title"><?php echo htmlspecialchars(getSiteSetting('contact_title', 'Contact')); ?></h2>
             <div class="contact-grid">
                 <div class="contact-info">
                     <div class="contact-item">
                         <div class="contact-icon">📍</div>
                         <div>
                             <h4>Address</h4>
-                            <p>Margaria Mears 18<br>Puerto Plata, Dominican Republic 57000</p>
+                            <p><?php echo nl2br(htmlspecialchars(getSiteSetting('company_address', 'Margaria Mears 18<br>Puerto Plata, Dominican Republic 57000'))); ?></p>
                         </div>
                     </div>
                     <div class="contact-item">
                         <div class="contact-icon">📞</div>
                         <div>
                             <h4>Phone</h4>
-                            <p>+1 809-586-6653</p>
+                            <p><?php echo htmlspecialchars(getSiteSetting('company_phone', '+1 809-586-6653')); ?></p>
                         </div>
                     </div>
                     <div class="contact-item">
                         <div class="contact-icon">💬</div>
                         <div>
                             <h4>WhatsApp</h4>
-                            <p>Available 24/7</p>
+                            <p><?php echo htmlspecialchars(getSiteSetting('whatsapp_availability', 'Available 24/7')); ?></p>
                         </div>
                     </div>
                 </div>
                 <div class="contact-form-wrapper">
-                    <form class="contact-form" id="contactForm">
-                        <h3>Send us a message</h3>
+                    <form class="contact-form" id="contactForm" action="contact-handler.php" method="POST">
+                        <h3><?php echo htmlspecialchars(getSiteSetting('contact_form_title', 'Send us a message')); ?></h3>
                         <input type="text" name="name" placeholder="Full name" required>
                         <input type="email" name="email" placeholder="Email address" required>
                         <input type="tel" name="phone" placeholder="Phone">
                         <input type="text" name="subject" placeholder="Subject">
                         <textarea name="message" placeholder="How can we help you?" rows="4" required></textarea>
-                        <button type="submit" class="btn-primary btn-full">Send Message</button>
+                        <button type="submit" class="btn-primary btn-full"><?php echo htmlspecialchars(getSiteSetting('contact_button_text', 'Send Message')); ?></button>
                         <div class="form-message"></div>
                     </form>
                 </div>
@@ -219,8 +236,8 @@ define('VCC_INSTALLED', true);
         <div class="container footer-content">
             <div class="footer-brand">
                 <img src="assets/logo.svg" alt="VCC Logo" class="footer-logo">
-                <p>Virtual Communication Connection</p>
-                <p>Virtual Call Center & Communications Outsourcing</p>
+                <p><?php echo htmlspecialchars(getSiteSetting('site_title', 'Virtual Communication Connection')); ?></p>
+                <p><?php echo htmlspecialchars(getSiteSetting('site_tagline', 'Virtual Call Center & Communications Outsourcing')); ?></p>
             </div>
             <div class="footer-links">
                 <h4>Quick Links</h4>
@@ -229,16 +246,28 @@ define('VCC_INSTALLED', true);
                     <li><a href="#about">About</a></li>
                     <li><a href="#services">Services</a></li>
                     <li><a href="#contact">Contact</a></li>
+                    <?php if (getSiteSetting('show_blog_link', 'false') === 'true'): ?>
+                    <li><a href="blog.php">Blog</a></li>
+                    <?php endif; ?>
                 </ul>
             </div>
             <div class="footer-contact">
                 <h4>Contact</h4>
-                <p>📍 Puerto Plata, RD</p>
-                <p>📞 +1 809-586-6653</p>
+                <p>📍 <?php echo htmlspecialchars(getSiteSetting('footer_location', 'Puerto Plata, RD')); ?></p>
+                <p>📞 <?php echo htmlspecialchars(getSiteSetting('company_phone', '+1 809-586-6653')); ?></p>
+                <?php if (getSiteSetting('social_facebook')): ?>
+                <p><a href="<?php echo htmlspecialchars(getSiteSetting('social_facebook')); ?>" target="_blank" rel="noopener">Facebook</a></p>
+                <?php endif; ?>
+                <?php if (getSiteSetting('social_instagram')): ?>
+                <p><a href="<?php echo htmlspecialchars(getSiteSetting('social_instagram')); ?>" target="_blank" rel="noopener">Instagram</a></p>
+                <?php endif; ?>
+                <?php if (getSiteSetting('social_linkedin')): ?>
+                <p><a href="<?php echo htmlspecialchars(getSiteSetting('social_linkedin')); ?>" target="_blank" rel="noopener">LinkedIn</a></p>
+                <?php endif; ?>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2026 Virtual Communication Connection. All rights reserved.</p>
+            <p>&copy; <?php echo date('Y'); ?> <?php echo htmlspecialchars(getSiteSetting('site_title', 'Virtual Communication Connection')); ?>. All rights reserved.</p>
         </div>
     </footer>
 
