@@ -292,7 +292,7 @@ function checkRole($requiredRoles) {
         exit;
     }
     if (is_string($requiredRoles)) $requiredRoles = [$requiredRoles];
-    if (!in_array($_SESSION['admin_role'], $requiredRoles)) {
+    if (!in_array($_SESSION['admin_role'] ?? '', $requiredRoles)) {
         header('Location: index.php?error=unauthorized');
         exit;
     }
