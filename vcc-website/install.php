@@ -190,6 +190,7 @@ function createTables($pdo, $admin_username, $admin_password, $admin_email) {
         ['instagram_url', '', 'url'],
         ['twitter_url', '', 'url'],
         ['linkedin_url', '', 'url'],
+        ['default_lang', 'en', 'text'],
     ];
     
     foreach ($settings as $setting) {
