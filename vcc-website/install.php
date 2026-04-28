@@ -222,6 +222,11 @@ function generateConfig($db_host, $db_name, $db_user, $db_pass, $site_title, $si
     $db_pass_escaped = str_replace("'", "\'", $db_pass);
     $site_title_escaped = str_replace("'", "\'", $site_title);
     
+    // Generate security keys at install time
+    $auth_key = bin2hex(random_bytes(32));
+    $secure_auth_key = bin2hex(random_bytes(32));
+    $logged_in_key = bin2hex(random_bytes(32));
+    
     return "<?php
 /**
  * VCC Website Configuration File
@@ -245,9 +250,9 @@ define('UPLOAD_DIR', __DIR__ . '/uploads/');
 define('UPLOAD_URL', SITE_URL . '/uploads/');
 
 // Security Keys (Change these for production!)
-define('AUTH_KEY', '" . bin2hex(random_bytes(32)) . "');
-define('SECURE_AUTH_KEY', '" . bin2hex(random_bytes(32)) . "');
-define('LOGGED_IN_KEY', '" . bin2hex(random_bytes(32)) . "');
+define('AUTH_KEY', '$auth_key');
+define('SECURE_AUTH_KEY', '$secure_auth_key');
+define('LOGGED_IN_KEY', '$logged_in_key');
 
 // Database Connection
 function getDBConnection() {
