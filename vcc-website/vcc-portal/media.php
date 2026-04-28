@@ -88,7 +88,7 @@ if (isset($_GET['delete']) && isset($_GET['id'])) {
 }
 
 // Get all media
-$stmt = $pdo->query("SELECT * FROM media_library ORDER BY created_at DESC");
+$stmt = $pdo->query("SELECT * FROM media_library ORDER BY uploaded_at DESC");
 $mediaFiles = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $pageTitle = 'Media Library';

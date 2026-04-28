@@ -17,15 +17,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     if ($action === 'mark_read') {
         $stmt = $pdo->prepare("UPDATE contact_messages SET status = 'read' WHERE id = ?");
         $stmt->execute([$messageId]);
-        logActivity('message_marked_read', "Message ID $messageId marked as read");
+        logActivity($pdo, $_SESSION['admin_id'], 'message_marked_read', "Message ID $messageId marked as read");
     } elseif ($action === 'mark_archived') {
         $stmt = $pdo->prepare("UPDATE contact_messages SET status = 'archived' WHERE id = ?");
         $stmt->execute([$messageId]);
-        logActivity('message_archived', "Message ID $messageId archived");
+        logActivity($pdo, $_SESSION['admin_id'], 'message_archived', "Message ID $messageId archived");
     } elseif ($action === 'delete') {
         $stmt = $pdo->prepare("DELETE FROM contact_messages WHERE id = ?");
         $stmt->execute([$messageId]);
-        logActivity('message_deleted', "Message ID $messageId deleted");
+        logActivity($pdo, $_SESSION['admin_id'], 'message_deleted', "Message ID $messageId deleted");
     }
     
     header('Location: messages.php');
@@ -90,7 +90,7 @@ include 'includes/header.php';
                 All (<?php echo count($messages); ?>)
             </a>
             <a href="messages.php?filter=new" class="filter-btn <?php echo $filter === 'new' ? 'active' : ''; ?>" style="padding: 8px 16px; border-radius: 6px; text-decoration: none; color: <?php echo $filter === 'new' ? 'white' : '#666'; ?>; background: <?php echo $filter === 'new' ? 'var(--secondary)' : '#f0f0f0'; ?>; font-weight: 600;">
-                New (<?php echo array_sum(array_column(array_filter($messages, fn($m) => $m['status'] === 'new'), 'id') ? count(array_filter($messages, fn($m) => $m['status'] === 'new')) : 0; ?>)
+                New (<?php echo count(array_filter($messages, fn($m) => $m['status'] === 'new')); ?>)
             </a>
             <a href="messages.php?filter=read" class="filter-btn <?php echo $filter === 'read' ? 'active' : ''; ?>" style="padding: 8px 16px; border-radius: 6px; text-decoration: none; color: <?php echo $filter === 'read' ? 'white' : '#666'; ?>; background: <?php echo $filter === 'read' ? 'var(--secondary)' : '#f0f0f0'; ?>; font-weight: 600;">
                 Read
