@@ -13,7 +13,7 @@ $errors = [];
 $success = false;
 
 // Get current settings
-$stmt = $pdo->query("SELECT * FROM site_settings");
+$stmt = $pdo->query("SELECT * FROM settings");
 $settingsRows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $settings = [];
 foreach ($settingsRows as $row) {
@@ -25,8 +25,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     foreach ($_POST as $key => $value) {
         if (strpos($key, 'setting_') === 0) {
             $settingKey = str_replace('setting_', '', $key);
-            $stmt = $pdo->prepare("UPDATE site_settings SET setting_value = ? WHERE setting_key = ?");
-            $stmt->execute([$value, $settingKey]);
+            $stmt = $pdo->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = ?");
+            $stmt->execute([$settingKey, $value, $value]);
         }
     }
     

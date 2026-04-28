@@ -45,9 +45,9 @@ if (isset($_GET['delete']) && isset($_GET['id'])) {
 
 // Get all categories with post counts
 $stmt = $pdo->query("
-    SELECT c.*, COUNT(p.id) as post_count 
+    SELECT c.*, COUNT(pc.post_id) as post_count 
     FROM categories c 
-    LEFT JOIN blog_posts p ON c.id = p.category_id 
+    LEFT JOIN post_categories pc ON c.id = pc.category_id 
     GROUP BY c.id 
     ORDER BY c.name
 ");
