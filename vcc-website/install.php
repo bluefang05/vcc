@@ -298,13 +298,13 @@ function requireLogin() {
 }
 
 // Check user role and redirect if unauthorized
-function checkRole($requiredRoles) {
+function checkRole(\$requiredRoles) {
     if (!isLoggedIn()) {
         header('Location: login.php');
         exit;
     }
-    if (is_string($requiredRoles)) $requiredRoles = [$requiredRoles];
-    if (!in_array($_SESSION['admin_role'] ?? '', $requiredRoles)) {
+    if (is_string(\$requiredRoles)) \$requiredRoles = [\$requiredRoles];
+    if (!in_array(\$_SESSION['admin_role'] ?? '', \$requiredRoles)) {
         header('Location: index.php?error=unauthorized');
         exit;
     }
