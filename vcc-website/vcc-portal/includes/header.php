@@ -125,6 +125,12 @@ if (isLoggedIn()) {
             height: 20px;
         }
         
+        .menu-item.disabled {
+            opacity: 0.4;
+            pointer-events: none;
+            cursor: not-allowed;
+        }
+        
         .menu-badge {
             margin-left: auto;
             background: var(--secondary);
