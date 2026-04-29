@@ -31,19 +31,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
     }
     
     if (empty($errors)) {
-        // Create uploads directory if it doesn't exist
-        $uploadDir = __DIR__ . '/../uploads/';
+        // Ensure uploads directory exists with absolute path and error handling
+        $baseDir = dirname(__DIR__);
+        $uploadDir = $baseDir . '/uploads/';
+        
         if (!file_exists($uploadDir)) {
-            mkdir($uploadDir, 0755, true);
+            if (!mkdir($uploadDir, 0755, true)) {
+                $errors[] = "Failed to create uploads directory. Check server permissions.";
+            }
         }
         
-        // Generate unique filename
-        $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
-        $filename = uniqid() . '_' . time() . '.' . $extension;
-        $filepath = $uploadDir . $filename;
-        $webpath = '/uploads/' . $filename;
+        // Verify directory is writable before proceeding
+        if (empty($errors) && !is_writable($uploadDir)) {
+            $errors[] = "Uploads directory is not writable. Check server permissions.";
+        }
         
-        if (move_uploaded_file($file['tmp_name'], $filepath)) {
+        if (empty($errors)) {
+            // Generate unique filename
+            $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+            $filename = uniqid() . '_' . time() . '.' . $extension;
+            $filepath = $uploadDir . $filename;
+            $webpath = '/uploads/' . $filename;
+            
+            if (move_uploaded_file($file['tmp_name'], $filepath)) {
             // Save to database
             $stmt = $pdo->prepare("INSERT INTO media_library (filename, filepath, title, alt_text, file_type, file_size) VALUES (?, ?, ?, ?, ?, ?)");
             $stmt->execute([

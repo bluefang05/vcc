@@ -48,11 +48,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['install_now'])) {
             // Generate config file
             $configContent = generateConfig($db_host, $db_name, $db_user, $db_pass, $site_title, $site_url);
             
+            // Ensure base directory exists and is writable
+            if (!file_exists($baseDir)) {
+                if (!mkdir($baseDir, 0755, true)) {
+                    $error = 'Could not create base directory. Check permissions.';
+                    goto end_install;
+                }
+            }
+            
+            if (!is_writable($baseDir)) {
+                $error = 'Base directory is not writable. Check permissions.';
+                goto end_install;
+            }
+            
             if (file_put_contents($baseDir . '/config.php', $configContent)) {
                 $success = true;
             } else {
                 $error = 'Could not write config.php. Please check file permissions.';
             }
+            
+            end_install:
         } catch (PDOException $e) {
             $error = 'Database connection failed: ' . $e->getMessage();
         }
