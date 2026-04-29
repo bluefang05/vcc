@@ -44,7 +44,7 @@ function getSiteSetting($key, $default = '') {
     <header class="header">
         <nav class="nav container">
             <div class="logo">
-                <img src="assets/logo.svg" alt="VCC Logo" class="logo-img">
+                <img src="<?php echo htmlspecialchars(getSiteSetting('logo_url', 'assets/logo.svg')); ?>" alt="<?php echo htmlspecialchars(getSiteSetting('logo_alt', 'VCC Logo')); ?>" class="logo-img">
             </div>
             <ul class="nav-menu">
                 <li><a href="#home">Home</a></li>
@@ -107,42 +107,42 @@ function getSiteSetting($key, $default = '') {
     <!-- Services Section -->
     <section id="services" class="services section">
         <div class="container">
-            <h2 class="section-title">Our Services</h2>
-            <p class="section-subtitle">Complete communication solutions for your business</p>
+            <h2 class="section-title"><?php echo htmlspecialchars(getSiteSetting('services_title', 'Our Services')); ?></h2>
+            <p class="section-subtitle"><?php echo htmlspecialchars(getSiteSetting('services_subtitle', 'Complete communication solutions for your business')); ?></p>
             <div class="services-intro">
-                <p>We provide comprehensive front office and back office support process management through various contact channels including phone, in-person, and virtual interactions. Our services support the entire customer relationship cycle in both outsourcing and insourcing modalities.</p>
-                <p><strong>Our bilingual team speaks 4 languages:</strong> English, French, Creole, and Spanish.</p>
+                <p><?php echo getSiteSetting('services_intro_1', 'We provide comprehensive front office and back office support process management through various contact channels including phone, in-person, and virtual interactions. Our services support the entire customer relationship cycle in both outsourcing and insourcing modalities.'); ?></p>
+                <p><?php echo getSiteSetting('services_intro_2', '<strong>Our bilingual team speaks 4 languages:</strong> English, French, Creole, and Spanish.'); ?></p>
             </div>
             <div class="services-grid">
                 <div class="service-card">
-                    <div class="service-icon">📞</div>
-                    <h3>Customer Service</h3>
-                    <p>Professional management of inquiries, complaints, and general support to keep your customers satisfied. Our bilingual agents ensure clear communication in English, French, Creole, and Spanish.</p>
+                    <div class="service-icon"><?php echo htmlspecialchars(getSiteSetting('service_1_icon', '📞')); ?></div>
+                    <h3><?php echo htmlspecialchars(getSiteSetting('service_1_title', 'Customer Service')); ?></h3>
+                    <p><?php echo htmlspecialchars(getSiteSetting('service_1_desc', 'Professional management of inquiries, complaints, and general support to keep your customers satisfied. Our bilingual agents ensure clear communication in English, French, Creole, and Spanish.')); ?></p>
                 </div>
                 <div class="service-card">
-                    <div class="service-icon">🔧</div>
-                    <h3>Technical Support</h3>
-                    <p>Specialized technical assistance including backend and/or frontend programming support to resolve issues and ensure operational continuity.</p>
+                    <div class="service-icon"><?php echo htmlspecialchars(getSiteSetting('service_2_icon', '🔧')); ?></div>
+                    <h3><?php echo htmlspecialchars(getSiteSetting('service_2_title', 'Technical Support')); ?></h3>
+                    <p><?php echo htmlspecialchars(getSiteSetting('service_2_desc', 'Specialized technical assistance including backend and/or frontend programming support to resolve issues and ensure operational continuity.')); ?></p>
                 </div>
                 <div class="service-card">
-                    <div class="service-icon">💼</div>
-                    <h3>Sales & Account Management</h3>
-                    <p>Proactive telephone sales strategies, account management, and market research to expand your customer base and revenue.</p>
+                    <div class="service-icon"><?php echo htmlspecialchars(getSiteSetting('service_3_icon', '💼')); ?></div>
+                    <h3><?php echo htmlspecialchars(getSiteSetting('service_3_title', 'Sales & Account Management')); ?></h3>
+                    <p><?php echo htmlspecialchars(getSiteSetting('service_3_desc', 'Proactive telephone sales strategies, account management, and market research to expand your customer base and revenue.')); ?></p>
                 </div>
                 <div class="service-card">
-                    <div class="service-icon">💬</div>
-                    <h3>Communication Channels</h3>
-                    <p>Professional administration of phone, chat, WhatsApp, email, and social media channels with multilingual support.</p>
+                    <div class="service-icon"><?php echo htmlspecialchars(getSiteSetting('service_4_icon', '💬')); ?></div>
+                    <h3><?php echo htmlspecialchars(getSiteSetting('service_4_title', 'Communication Channels')); ?></h3>
+                    <p><?php echo htmlspecialchars(getSiteSetting('service_4_desc', 'Professional administration of phone, chat, WhatsApp, email, and social media channels with multilingual support.')); ?></p>
                 </div>
                 <div class="service-card">
-                    <div class="service-icon">📊</div>
-                    <h3>Business Process Support</h3>
-                    <p>Document administration, translations, interpretation services, customer follow-up, delivery, and installation services as required.</p>
+                    <div class="service-icon"><?php echo htmlspecialchars(getSiteSetting('service_5_icon', '📊')); ?></div>
+                    <h3><?php echo htmlspecialchars(getSiteSetting('service_5_title', 'Business Process Support')); ?></h3>
+                    <p><?php echo htmlspecialchars(getSiteSetting('service_5_desc', 'Document administration, translations, interpretation services, customer follow-up, delivery, and installation services as required.')); ?></p>
                 </div>
                 <div class="service-card">
-                    <div class="service-icon">🌙</div>
-                    <h3>24/7 Call Center</h3>
-                    <p>Continuous coverage without interruptions, because your business never sleeps. Available in all 4 supported languages.</p>
+                    <div class="service-icon"><?php echo htmlspecialchars(getSiteSetting('service_6_icon', '🌙')); ?></div>
+                    <h3><?php echo htmlspecialchars(getSiteSetting('service_6_title', '24/7 Call Center')); ?></h3>
+                    <p><?php echo htmlspecialchars(getSiteSetting('service_6_desc', 'Continuous coverage without interruptions, because your business never sleeps. Available in all 4 supported languages.')); ?></p>
                 </div>
             </div>
         </div>
@@ -151,32 +151,32 @@ function getSiteSetting($key, $default = '') {
     <!-- Values Section -->
     <section id="values" class="values section">
         <div class="container">
-            <h2 class="section-title">Our Values</h2>
+            <h2 class="section-title"><?php echo htmlspecialchars(getSiteSetting('values_title', 'Our Values')); ?></h2>
             <div class="values-grid">
                 <div class="value-item">
-                    <div class="value-number">01</div>
-                    <h3>Authentic Connection</h3>
-                    <p>We build genuine relationships between your company and your customers.</p>
+                    <div class="value-number"><?php echo htmlspecialchars(getSiteSetting('value_1_number', '01')); ?></div>
+                    <h3><?php echo htmlspecialchars(getSiteSetting('value_1_title', 'Authentic Connection')); ?></h3>
+                    <p><?php echo htmlspecialchars(getSiteSetting('value_1_desc', 'We build genuine relationships between your company and your customers.')); ?></p>
                 </div>
                 <div class="value-item">
-                    <div class="value-number">02</div>
-                    <h3>24/7 Efficiency</h3>
-                    <p>We operate without pause to guarantee constant attention.</p>
+                    <div class="value-number"><?php echo htmlspecialchars(getSiteSetting('value_2_number', '02')); ?></div>
+                    <h3><?php echo htmlspecialchars(getSiteSetting('value_2_title', '24/7 Efficiency')); ?></h3>
+                    <p><?php echo htmlspecialchars(getSiteSetting('value_2_desc', 'We operate without pause to guarantee constant attention.')); ?></p>
                 </div>
                 <div class="value-item">
-                    <div class="value-number">03</div>
-                    <h3>Total Transparency</h3>
-                    <p>Clear and honest communication in every interaction.</p>
+                    <div class="value-number"><?php echo htmlspecialchars(getSiteSetting('value_3_number', '03')); ?></div>
+                    <h3><?php echo htmlspecialchars(getSiteSetting('value_3_title', 'Total Transparency')); ?></h3>
+                    <p><?php echo htmlspecialchars(getSiteSetting('value_3_desc', 'Clear and honest communication in every interaction.')); ?></p>
                 </div>
                 <div class="value-item">
-                    <div class="value-number">04</div>
-                    <h3>Constant Innovation</h3>
-                    <p>Always updated with the latest communications technology.</p>
+                    <div class="value-number"><?php echo htmlspecialchars(getSiteSetting('value_4_number', '04')); ?></div>
+                    <h3><?php echo htmlspecialchars(getSiteSetting('value_4_title', 'Constant Innovation')); ?></h3>
+                    <p><?php echo htmlspecialchars(getSiteSetting('value_4_desc', 'Always updated with the latest communications technology.')); ?></p>
                 </div>
                 <div class="value-item">
-                    <div class="value-number">05</div>
-                    <h3>Human Excellence</h3>
-                    <p>The human factor makes the difference in every conversation.</p>
+                    <div class="value-number"><?php echo htmlspecialchars(getSiteSetting('value_5_number', '05')); ?></div>
+                    <h3><?php echo htmlspecialchars(getSiteSetting('value_5_title', 'Human Excellence')); ?></h3>
+                    <p><?php echo htmlspecialchars(getSiteSetting('value_5_desc', 'The human factor makes the difference in every conversation.')); ?></p>
                 </div>
             </div>
         </div>
@@ -239,7 +239,7 @@ function getSiteSetting($key, $default = '') {
     <footer class="footer">
         <div class="container footer-content">
             <div class="footer-brand">
-                <img src="assets/logo.svg" alt="VCC Logo" class="footer-logo">
+                <img src="<?php echo htmlspecialchars(getSiteSetting('logo_url', 'assets/logo.svg')); ?>" alt="<?php echo htmlspecialchars(getSiteSetting('logo_alt', 'VCC Logo')); ?>" class="footer-logo">
                 <p><?php echo htmlspecialchars(getSiteSetting('site_title', 'Virtual Communication Connection')); ?></p>
                 <p><?php echo htmlspecialchars(getSiteSetting('site_tagline', 'Virtual Call Center & Communications Outsourcing')); ?></p>
             </div>
