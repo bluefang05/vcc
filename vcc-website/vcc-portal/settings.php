@@ -104,6 +104,59 @@ include 'includes/header.php';
                 </div>
             </div>
             
+            <!-- About Section -->
+            <div class="settings-card">
+                <h2>About Section</h2>
+                
+                <div class="form-group">
+                    <label for="setting_about_title">About Title</label>
+                    <input type="text" id="setting_about_title" name="setting_about_title" value="<?php echo htmlspecialchars($settings['about_title'] ?? ''); ?>">
+                </div>
+                
+                <div class="form-group">
+                    <label for="setting_about_intro">About Intro (HTML allowed)</label>
+                    <textarea id="setting_about_intro" name="setting_about_intro" rows="3"><?php echo htmlspecialchars($settings['about_intro'] ?? ''); ?></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="setting_about_description_1">About Description 1 (HTML allowed)</label>
+                    <textarea id="setting_about_description_1" name="setting_about_description_1" rows="3"><?php echo htmlspecialchars($settings['about_description_1'] ?? ''); ?></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="setting_about_description_2">About Description 2 (HTML allowed)</label>
+                    <textarea id="setting_about_description_2" name="setting_about_description_2" rows="3"><?php echo htmlspecialchars($settings['about_description_2'] ?? ''); ?></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="setting_about_tagline">About Tagline</label>
+                    <input type="text" id="setting_about_tagline" name="setting_about_tagline" value="<?php echo htmlspecialchars($settings['about_tagline'] ?? ''); ?>">
+                </div>
+                
+                <hr style="margin: 25px 0; border: none; border-top: 1px solid #eee;">
+                <h3>Mission & Vision</h3>
+                
+                <h4>Mission</h4>
+                <div class="form-group">
+                    <label for="setting_mission_title">Mission Title</label>
+                    <input type="text" id="setting_mission_title" name="setting_mission_title" value="<?php echo htmlspecialchars($settings['mission_title'] ?? ''); ?>">
+                </div>
+                <div class="form-group">
+                    <label for="setting_mission_content">Mission Content</label>
+                    <textarea id="setting_mission_content" name="setting_mission_content" rows="3"><?php echo htmlspecialchars($settings['mission_content'] ?? ''); ?></textarea>
+                </div>
+                
+                <h4>Vision</h4>
+                <div class="form-group">
+                    <label for="setting_vision_title">Vision Title</label>
+                    <input type="text" id="setting_vision_title" name="setting_vision_title" value="<?php echo htmlspecialchars($settings['vision_title'] ?? ''); ?>">
+                </div>
+                <div class="form-group">
+                    <label for="setting_vision_content">Vision Content</label>
+                    <textarea id="setting_vision_content" name="setting_vision_content" rows="3"><?php echo htmlspecialchars($settings['vision_content'] ?? ''); ?></textarea>
+                </div>
+            </div>
+            
             <!-- Logo Settings -->
             <div class="settings-card">
                 <h2>Logo Settings</h2>
