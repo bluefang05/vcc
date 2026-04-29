@@ -181,21 +181,109 @@ function createTables($pdo, $admin_username, $admin_password, $admin_email) {
     // Insert default settings
     $stmt = $pdo->prepare("INSERT IGNORE INTO settings (setting_key, setting_value, setting_type) VALUES (?, ?, ?)");
     $settings = [
+        // General
         ['site_title', 'Virtual Communication Connection', 'text'],
-        ['contact_email', 'info@vcc.com', 'email'],
-        ['whatsapp_number', '+18095866653', 'text'],
-        ['phone', '+1 809-586-6653', 'text'],
-        ['address', 'Margaria mears 18, Puerto Plata, Dominican Republic 57000', 'text'],
-        ['hero_title', 'Connecting You to the World', 'text'],
-        ['hero_subtitle', 'Professional communication solutions for modern businesses', 'text'],
-        ['about_content', 'VCC is dedicated to providing top-tier communication services...', 'textarea'],
-        ['facebook_url', '', 'url'],
-        ['instagram_url', '', 'url'],
-        ['twitter_url', '', 'url'],
-        ['linkedin_url', '', 'url'],
+        ['site_tagline', 'Virtual Call Center & Communications Outsourcing', 'text'],
+        ['meta_description', 'Professional virtual call center and communications outsourcing in the Dominican Republic.', 'textarea'],
+        ['admin_email', 'admin@vcc.com', 'email'],
         ['default_lang', 'en', 'text'],
+        
+        // Logo
+        ['logo_url', 'assets/logo.svg', 'text'],
+        ['logo_alt', 'VCC Logo', 'text'],
+        
+        // Hero Section
+        ['hero_title', 'Virtual Communication Connection', 'text'],
+        ['hero_subtitle', 'Virtual Call Center & Communications Outsourcing', 'text'],
+        ['hero_description', 'We connect companies with their clients intelligently, humanly, and efficiently', 'textarea'],
+        
+        // About Section
+        ['about_title', 'About Us', 'text'],
+        ['about_intro', '<strong>Virtual Communication Connection (VCC)</strong> is a next-generation virtual call center in the Dominican Republic.', 'textarea'],
+        ['about_description_1', 'We enable companies to delegate all their communications <strong>(calls, chats, WhatsApp, emails)</strong> professionally, scalably, and at lower cost.', 'textarea'],
+        ['about_description_2', 'We have native operators in <strong>Spanish, English, and Creole</strong>, <strong>VoIP</strong> technology, <strong>integrated CRM</strong>, and real-time reporting.', 'textarea'],
+        ['about_tagline', 'More than a call center, we are your remote extension.', 'text'],
+        
+        // Mission & Vision
+        ['mission_title', 'Mission', 'text'],
+        ['mission_content', 'We connect companies with their clients intelligently, humanly, and efficiently. We manage customer service, sales, support, and follow-up so you can focus on growing your business.', 'textarea'],
+        ['vision_title', 'Vision', 'text'],
+        ['vision_content', 'To be the leading virtual communications outsourcing company in the Dominican Republic and the Caribbean by 2030, combining the best technology with a human touch.', 'textarea'],
+        
+        // Services Section
+        ['services_title', 'Our Services', 'text'],
+        ['services_subtitle', 'Complete communication solutions for your business', 'text'],
+        ['services_intro_1', 'We provide comprehensive front office and back office support process management through various contact channels including phone, in-person, and virtual interactions. Our services support the entire customer relationship cycle in both outsourcing and insourcing modalities.', 'textarea'],
+        ['services_intro_2', 'Our bilingual team speaks 4 languages: English, French, Creole, and Spanish.', 'textarea'],
+        
+        // Service Cards
+        ['service_1_icon', '📞', 'text'],
+        ['service_1_title', 'Customer Service', 'text'],
+        ['service_1_desc', 'Professional management of inquiries, complaints, and general support to keep your customers satisfied. Our bilingual agents ensure clear communication in English, French, Creole, and Spanish.', 'textarea'],
+        ['service_2_icon', '🔧', 'text'],
+        ['service_2_title', 'Technical Support', 'text'],
+        ['service_2_desc', 'Specialized technical assistance including backend and/or frontend programming support to resolve issues and ensure operational continuity.', 'textarea'],
+        ['service_3_icon', '💼', 'text'],
+        ['service_3_title', 'Sales & Account Management', 'text'],
+        ['service_3_desc', 'Proactive telephone sales strategies, account management, and market research to expand your customer base and revenue.', 'textarea'],
+        ['service_4_icon', '💬', 'text'],
+        ['service_4_title', 'Communication Channels', 'text'],
+        ['service_4_desc', 'Professional administration of phone, chat, WhatsApp, email, and social media channels with multilingual support.', 'textarea'],
+        ['service_5_icon', '📊', 'text'],
+        ['service_5_title', 'Business Process Support', 'text'],
+        ['service_5_desc', 'Document administration, translations, interpretation services, customer follow-up, delivery, and installation services as required.', 'textarea'],
+        ['service_6_icon', '🌙', 'text'],
+        ['service_6_title', '24/7 Call Center', 'text'],
+        ['service_6_desc', 'Continuous coverage without interruptions, because your business never sleeps. Available in all 4 supported languages.', 'textarea'],
+        
+        // Values Section
+        ['values_title', 'Our Values', 'text'],
+        ['value_1_number', '01', 'text'],
+        ['value_1_title', 'Authentic Connection', 'text'],
+        ['value_1_desc', 'We build genuine relationships between your company and your customers.', 'textarea'],
+        ['value_2_number', '02', 'text'],
+        ['value_2_title', '24/7 Efficiency', 'text'],
+        ['value_2_desc', 'We operate without pause to guarantee constant attention.', 'textarea'],
+        ['value_3_number', '03', 'text'],
+        ['value_3_title', 'Total Transparency', 'text'],
+        ['value_3_desc', 'Clear and honest communication in every interaction.', 'textarea'],
+        ['value_4_number', '04', 'text'],
+        ['value_4_title', 'Constant Innovation', 'text'],
+        ['value_4_desc', 'Always updated with the latest communications technology.', 'textarea'],
+        ['value_5_number', '05', 'text'],
+        ['value_5_title', 'Human Excellence', 'text'],
+        ['value_5_desc', 'The human factor makes the difference in every conversation.', 'textarea'],
+        
+        // CTA Section
+        ['cta_headline', '"Your professional connection, without limits"', 'text'],
+        ['cta_subheadline', 'Take your customer service to the next level with VCC', 'text'],
+        ['cta_button_text', 'Write Now 🚀', 'text'],
+        
+        // Contact Section
+        ['contact_title', 'Contact', 'text'],
+        ['contact_form_title', 'Send us a message', 'text'],
+        ['contact_button_text', 'Send Message', 'text'],
+        ['company_address', 'Margaria Mears 18<br>Puerto Plata, Dominican Republic 57000', 'textarea'],
+        ['company_phone', '+1 809-586-6653', 'text'],
+        ['whatsapp_availability', 'Available 24/7', 'text'],
+        ['contact_whatsapp', 'https://wa.me/18095866653', 'url'],
+        ['whatsapp_number', 'https://wa.me/18095866653', 'url'],
+        
+        // Footer
+        ['footer_location', 'Puerto Plata, RD', 'text'],
+        ['show_blog_link', 'false', 'text'],
+        
+        // Social Media
+        ['social_facebook', '', 'url'],
+        ['social_instagram', '', 'url'],
+        ['social_linkedin', '', 'url'],
+        
+        // SEO
+        ['meta_keywords', '', 'text'],
+        ['meta_author', '', 'text'],
+        ['google_analytics', '', 'text'],
     ];
-    
+
     foreach ($settings as $setting) {
         $stmt->execute($setting);
     }
